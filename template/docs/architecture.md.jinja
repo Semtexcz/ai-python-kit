@@ -1,0 +1,37 @@
+# Architecture
+
+This document is the project-owned architecture reference named by `.ai-python/policy.toml`.
+
+## Selected style
+
+`{{ architecture_resolved }}`{% if architecture_style == 'auto' %} (resolved from the selected profiles){% endif %}. {% if architecture_resolved == 'modular' %}Components expose narrow public APIs and remain independent where the project does not need an internal boundary.{% elif architecture_resolved == 'layered' %}Dependencies point from presentation to application to domain. Upper layers may call lower layers; lower layers must not import upper layers.{% elif architecture_resolved == 'hexagonal' %}The domain is independent of application orchestration, ports, adapters, and the composition root. Adapters depend inward on ports and application code; the composition root wires concrete adapters.{% else %}The project supplies the module map and contracts for this custom boundary. Replace the generated seed map when the actual package layout differs.{% endif %}
+
+## Module map
+
+{% if architecture_resolved == 'modular' or architecture_resolved == 'custom' %}
+- `{{ package }}.core` contains pure behavior.
+{% if profile_cli %}- `{{ package }}.cli` translates command-line input into a call to the core.{% endif %}
+{% elif architecture_resolved == 'layered' %}
+- `{{ package }}.domain.greeting` contains pure behavior.
+- `{{ package }}.application.service` coordinates the use case.
+{% if profile_cli %}- `{{ package }}.presentation.cli` translates command-line input.{% endif %}
+{% else %}
+- `{{ package }}.domain.greeting` contains pure behavior.
+- `{{ package }}.ports.greeting` defines the presentation port.
+- `{{ package }}.application.use_case` coordinates the use case.
+- `{{ package }}.adapters.console` implements the port.
+- `{{ package }}.composition` wires the adapter.
+{% if profile_cli %}- `{{ package }}.adapters.cli` translates command-line input.{% endif %}
+{% endif %}
+
+## Static contracts
+
+{% if graph_mode == 'contracts' %}
+`.ai-python/config/importlinter.ini` enforces the dependency direction and acyclic immediate children with Import Linter. Run `lint-imports` through the check recipe. Add or narrow contracts when the module map changes.
+{% else %}
+The package has at most one immediate importable production child, so `graph = "flat"` is intentional. No internal contract is promised at this size. Add contracts and change `graph` to `"contracts"` before introducing a second child with a meaningful boundary.
+{% endif %}
+
+## Review notes
+
+Keep runtime imports, callbacks, and configuration-based coupling consistent with the static graph. Record any deviation and its reason here before relying on an exception.

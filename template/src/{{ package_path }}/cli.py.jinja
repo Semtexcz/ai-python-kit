@@ -1,0 +1,24 @@
+{%- from "_docstrings.jinja" import cli_main_doc with context -%}
+"""Command-line entry point for {{ display_name }}."""
+
+from __future__ import annotations
+
+import argparse
+from collections.abc import Sequence
+
+{% if architecture_resolved == 'hexagonal' %}from {{ package }}.adapters.console import ConsolePresenter
+{% endif %}from {{ cli_greet_module }} import greet
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """{{ cli_main_doc() | trim | indent(4) }}
+    """
+    parser = argparse.ArgumentParser(prog="{{ distribution_name }}")
+    parser.add_argument("name", help="display name to greet")
+    args = parser.parse_args(argv)
+    try:
+        message = greet(args.name)
+    except ValueError as exc:
+        parser.error(str(exc))
+    {% if architecture_resolved == 'hexagonal' %}ConsolePresenter().present(message){% else %}print(message){% endif %}
+    return 0

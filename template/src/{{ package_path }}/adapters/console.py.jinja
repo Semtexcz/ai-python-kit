@@ -1,0 +1,13 @@
+{%- from "_docstrings.jinja" import presenter_doc with context -%}
+"""Console presentation adapter for {{ display_name }}."""
+
+from __future__ import annotations
+
+
+class ConsolePresenter:
+    """Write presented messages to standard output."""
+
+    def present(self, message: str) -> None:
+        """{{ presenter_doc() | trim | indent(8) }}
+        """
+        print(message)

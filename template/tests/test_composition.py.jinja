@@ -1,0 +1,11 @@
+"""Tests for the hexagonal composition root and its adapter wiring."""
+
+from __future__ import annotations
+
+from {{ package }}.composition import make_presenter
+
+
+def test_builds_a_console_presenter(capsys) -> None:
+    presenter = make_presenter()
+    presenter.present("hello")
+    assert capsys.readouterr().out == "hello\n"

@@ -1,0 +1,194 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+set dotenv-load := false
+
+default:
+    @just --list
+
+# Validate policy and native references without project dependencies.
+validate:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    PINNED="$(uv python find "$(cat .python-version)")"
+    "${PINNED}" .ai-python/kit/adapter/ai_python_policy.py validate
+
+# Run the unified verification workflow. Use `check online` for live advisories.
+check mode="offline":
+    #!/usr/bin/env bash
+    set -Eeuo pipefail
+
+    MODE="{{ mode }}"
+    if [[ "${MODE}" != "offline" && "${MODE}" != "online" ]]; then
+        echo "error: mode must be offline or online" >&2
+        exit 2
+    fi
+
+    export UV_PROJECT_ENVIRONMENT=.ai-python/.venv
+    export PYTHONHASHSEED=0
+    export TZ=UTC
+    export PYTEST_ADDOPTS=
+    export PYTEST_PLUGINS=
+    export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+    export RUFF_CACHE_DIR=.ai-python/cache/ruff
+    export MYPY_CACHE_DIR=.ai-python/cache/mypy
+    export PYTHONPYCACHEPREFIX=.ai-python/cache/pycache
+    unset COVERAGE_FILE COVERAGE_RCFILE PYTHONPATH GITLEAKS_CONFIG
+
+    mkdir -p .ai-python/evidence .ai-python/cache
+    PINNED="$(uv python find "$(cat .python-version)")"
+    adapter() { "${PINNED}" .ai-python/kit/adapter/ai_python_policy.py "$@"; }
+    adapter_env() { uv run --no-sync python .ai-python/kit/adapter/ai_python_policy.py "$@"; }
+
+    load_array() {
+        local name="$1"
+        local text="$2"
+        local -n ref="${name}"
+        ref=()
+        if [[ -n "${text}" ]]; then
+            mapfile -t ref <<< "${text}"
+        fi
+    }
+
+    STAGES=(config format lint types docs architecture dependencies secrets tests)
+    if [[ "${MODE}" == "online" ]]; then
+        STAGES+=(online)
+    fi
+    CURRENT=""
+    on_error() {
+        local code=$?
+        trap - ERR
+        echo "FAIL ${CURRENT} exit=${code}"
+        local found=0
+        local stage
+        for stage in "${STAGES[@]}"; do
+            if [[ ${found} -eq 1 ]]; then
+                echo "NOT EXECUTED ${stage}"
+            fi
+            if [[ "${stage}" == "${CURRENT}" ]]; then
+                found=1
+            fi
+        done
+        exit "${code}"
+    }
+    trap on_error ERR
+    begin() { CURRENT="$1"; }
+
+    begin config
+    adapter validate
+    uv lock --check --offline
+    SYNC_TEXT="$(adapter sync-args)"
+    load_array SYNC_ARGS "${SYNC_TEXT}"
+    uv sync --locked --offline --no-default-groups "${SYNC_ARGS[@]}"
+    echo "PASS config"
+
+    begin format
+    SOURCE_TEXT="$(adapter paths source)"
+    TEST_TEXT="$(adapter paths tests)"
+    load_array SOURCE_ARGS "${SOURCE_TEXT}"
+    load_array TEST_ARGS "${TEST_TEXT}"
+    uv run --no-sync ruff format --check \
+        --config .ai-python/config/ruff.toml \
+        "${SOURCE_ARGS[@]}" "${TEST_ARGS[@]}"
+    echo "PASS format"
+
+    begin lint
+    uv run --no-sync ruff check \
+        --config .ai-python/config/ruff.toml \
+        "${SOURCE_ARGS[@]}" "${TEST_ARGS[@]}"
+    echo "PASS lint"
+
+    begin types
+    PACKAGE_TEXT="$(adapter paths package)"
+    load_array PACKAGE_ARGS "${PACKAGE_TEXT}"
+    uv run --no-sync mypy --config-file .ai-python/config/mypy.ini "${PACKAGE_ARGS[@]}"
+    echo "PASS types"
+
+    begin docs
+    adapter docstrings
+    DOCSTRING_FORMAT="$(adapter docstring-format)"
+    if [[ "${DOCSTRING_FORMAT}" == "pep257" ]]; then
+        echo "SKIP docs.pydoclint (pep257 policy; review prose against signatures)"
+    else
+        DOC_TEXT="$(adapter paths docs)"
+        load_array DOC_ARGS "${DOC_TEXT}"
+        uv run --no-sync flake8 --require-plugins pydoclint \
+            --config .ai-python/config/flake8.ini "${DOC_ARGS[@]}"
+    fi
+    echo "PASS docs"
+
+    begin architecture
+    ARCHITECTURE_MODE="$(adapter architecture-mode)"
+    if [[ "${ARCHITECTURE_MODE}" == "contracts" ]]; then
+        uv run --no-sync lint-imports \
+            --config .ai-python/config/importlinter.ini \
+            --cache-dir .ai-python/cache/import-linter
+    elif [[ "${ARCHITECTURE_MODE}" == "flat" ]]; then
+        echo "SKIP architecture.contracts (flat graph; reason in docs/architecture.md)"
+    else
+        echo "error: architecture graph must be contracts or flat" >&2
+        false
+    fi
+    echo "PASS architecture"
+
+    begin dependencies
+    adapter_env dependencies
+    uv run --no-sync deptry "${SOURCE_ARGS[@]}" --no-ansi
+    echo "PASS dependencies"
+
+    begin secrets
+    command -v gitleaks >/dev/null 2>&1
+    gitleaks dir . \
+        --redact=100 \
+        --config .ai-python/config/gitleaks.toml \
+        --no-banner \
+        --report-format json \
+        --report-path .ai-python/evidence/gitleaks.json
+    echo "PASS secrets"
+
+    begin tests
+    SELECTOR="$(adapter pytest-selector)"
+    PLUGIN_TEXT="$(adapter plugins)"
+    PLUGIN_ARGS=()
+    if [[ -n "${PLUGIN_TEXT}" ]]; then
+        while IFS= read -r plugin; do
+            PLUGIN_ARGS+=(-p "${plugin}")
+        done <<< "${PLUGIN_TEXT}"
+    fi
+    uv run --no-sync coverage erase --rcfile=.ai-python/config/coverage.ini
+    uv run --no-sync python -m coverage run \
+        --rcfile=.ai-python/config/coverage.ini \
+        -m pytest \
+        -c .ai-python/config/pytest.ini \
+        --rootdir=. \
+        "${TEST_ARGS[@]}" \
+        -m "${SELECTOR}" \
+        --junitxml=.ai-python/evidence/junit.xml \
+        -p pytest_socket \
+        --disable-socket \
+        "${PLUGIN_ARGS[@]}"
+    adapter junit-check .ai-python/evidence/junit.xml
+    uv run --no-sync coverage report --rcfile=.ai-python/config/coverage.ini
+    echo "PASS tests"
+
+    if [[ "${MODE}" == "offline" ]]; then
+        echo "SKIP online.vulnerabilities (offline mode; use 'check online')"
+    else
+        begin online
+        RUNTIME_TEXT="$(adapter export-runtime-args)"
+        load_array RUNTIME_ARGS "${RUNTIME_TEXT}"
+        uv export --locked --no-default-groups --no-dev --no-emit-project \
+            --no-hashes --format requirements-txt "${RUNTIME_ARGS[@]}" \
+            --output-file .ai-python/evidence/runtime-requirements.txt
+        uv export --locked --no-default-groups --no-emit-project \
+            --no-hashes --format requirements-txt "${SYNC_ARGS[@]}" \
+            --output-file .ai-python/evidence/verification-requirements.txt
+        for audit_name in runtime verification; do
+            uv run --no-sync pip-audit --no-deps --disable-pip --strict \
+                --progress-spinner off --format json \
+                --output ".ai-python/evidence/audit-${audit_name}.json" \
+                -r ".ai-python/evidence/${audit_name}-requirements.txt"
+            adapter audit-check ".ai-python/evidence/audit-${audit_name}.json"
+        done
+        echo "PASS online"
+    fi
+
+    echo "VERIFICATION PASSED mode=${MODE} revision=$(git rev-parse --short HEAD 2>/dev/null || echo unversioned)"

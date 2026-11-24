@@ -1,0 +1,19 @@
+"""Command-level behavior tests for the console entry point."""
+
+from __future__ import annotations
+
+import pytest
+
+from {{ cli_module }} import main
+
+
+def test_prints_the_greeting(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["World"]) == 0
+    assert capsys.readouterr().out == "Hello, World!\n"
+
+
+def test_rejects_a_blank_name(capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit) as exc_info:
+        main([""])
+    assert exc_info.value.code == 2
+    assert "name must not be blank" in capsys.readouterr().err

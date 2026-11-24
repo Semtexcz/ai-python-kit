@@ -1,0 +1,188 @@
+_subdirectory: template
+_answers_file: .copier-answers.ai-python-kit.yml
+_templates_suffix: .jinja
+_min_copier_version: "9.19.1"
+
+_exclude:
+  - "{% if creation_mode == 'adopt' %}/src{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/tests{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/docs{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/README.md{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/AGENTS.md{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/justfile{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/pyproject.toml{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/.python-version{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/.gitignore{% endif %}"
+  - "{% if creation_mode == 'adopt' %}/.github{% endif %}"
+  - "{% if creation_mode == 'init' %}.ai-python/kit/bootstrap/adopt{% endif %}"
+  - "{% if architecture_resolved != 'modular' and architecture_resolved != 'custom' %}src/{{ package_path }}/core.py{% endif %}"
+  - "{% if architecture_resolved != 'layered' and architecture_resolved != 'hexagonal' %}src/{{ package_path }}/domain{% endif %}"
+  - "{% if architecture_resolved != 'layered' and architecture_resolved != 'hexagonal' %}src/{{ package_path }}/application{% endif %}"
+  - "{% if architecture_resolved != 'layered' %}src/{{ package_path }}/application/service.py{% endif %}"
+  - "{% if architecture_resolved != 'layered' or not profile_cli %}src/{{ package_path }}/presentation{% endif %}"
+  - "{% if architecture_resolved != 'hexagonal' %}src/{{ package_path }}/application/use_case.py{% endif %}"
+  - "{% if architecture_resolved != 'hexagonal' %}src/{{ package_path }}/ports{% endif %}"
+  - "{% if architecture_resolved != 'hexagonal' %}src/{{ package_path }}/adapters{% endif %}"
+  - "{% if architecture_resolved != 'hexagonal' %}src/{{ package_path }}/composition.py{% endif %}"
+  - "{% if architecture_resolved != 'hexagonal' %}tests/test_composition.py{% endif %}"
+  - "{% if architecture_resolved == 'layered' or not profile_cli %}src/{{ package_path }}/cli.py{% endif %}"
+  - "{% if not profile_cli %}src/{{ package_path }}/presentation/cli.py{% endif %}"
+  - "{% if not profile_cli %}tests/test_cli.py{% endif %}"
+
+display_name:
+  type: str
+  help: Human-readable project name.
+  default: Example Project
+  validator: >-
+    {% if not (display_name | trim) %}display_name must not be blank{% endif %}
+
+distribution_name:
+  type: str
+  help: Distribution name used in the project manifest.
+  default: example-project
+  validator: >-
+    {% if not (distribution_name | regex_search('^[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?$')) %}distribution_name must use letters, digits, dots, underscores, or hyphens and start and end with a letter or digit{% endif %}
+
+package:
+  type: str
+  help: Dotted import identifier for the single installed root package.
+  default: example
+  validator: >-
+    {% if not (package | regex_search('^[a-z_][a-z0-9_]*(\.[a-z_][a-z0-9_]*)*$')) %}package must be a lowercase dotted Python identifier{% endif %}
+
+python_version:
+  type: str
+  help: Minimum and verification Python version.
+  choices:
+    - "3.11"
+    - "3.12"
+  default: "3.12"
+
+creation_mode:
+  type: str
+  help: Render a new project seed or an adoption proposal.
+  choices:
+    - init
+    - adopt
+  default: init
+
+quality:
+  type: str
+  help: Quality preset used to seed policy and native configuration.
+  choices:
+    - minimal
+    - standard
+    - strict
+  default: standard
+
+source_dir:
+  type: str
+  help: Repository-relative production source root.
+  default: src
+  validator: >-
+    {% if not (source_dir | trim) or (source_dir | trim).startswith('/') or '..' in (source_dir | trim).split('/') %}source_dir must be a non-empty repository-relative directory{% endif %}
+
+tests_dir:
+  type: str
+  help: Repository-relative test root.
+  default: tests
+  validator: >-
+    {% if not (tests_dir | trim) or (tests_dir | trim).startswith('/') or '..' in (tests_dir | trim).split('/') %}tests_dir must be a non-empty repository-relative directory{% endif %}
+
+profile_library:
+  type: bool
+  help: Include the installable library baseline.
+  default: true
+profile_cli:
+  type: bool
+  help: Add an argparse console entry point and command tests.
+  default: false
+profile_scientific:
+  type: bool
+  help: Recommend NumPy docstrings and scientific review guidance.
+  default: false
+profile_backend:
+  type: bool
+  help: Recommend a layered architecture and service boundaries.
+  default: false
+profile_desktop:
+  type: bool
+  help: Recommend a hexagonal architecture and presentation boundaries.
+  default: false
+profile_automation:
+  type: bool
+  help: Add explicit I/O, configuration, and idempotence guidance.
+  default: false
+profile_data_processing:
+  type: bool
+  help: Add schema, validation, and transformation guidance.
+  default: false
+
+architecture_style:
+  type: str
+  help: Architecture style; auto resolves a single profile recommendation.
+  choices:
+    - auto
+    - modular
+    - layered
+    - hexagonal
+    - custom
+  default: auto
+
+docstring_format:
+  type: str
+  help: Structured docstring format; auto resolves the profile recommendation.
+  choices:
+    - auto
+    - google
+    - numpy
+    - sphinx
+    - pep257
+  default: auto
+
+profiles:
+  type: yaml
+  when: false
+  default: >-
+    {{ (['library'] if profile_library else []) + (['cli'] if profile_cli else []) + (['scientific'] if profile_scientific else []) + (['backend'] if profile_backend else []) + (['desktop'] if profile_desktop else []) + (['automation'] if profile_automation else []) + (['data-processing'] if profile_data_processing else []) }}
+
+architecture_resolved:
+  type: str
+  when: false
+  default: >-
+    {% set recs = (['layered'] if profile_backend else []) + (['hexagonal'] if profile_desktop else []) %}{{ architecture_style if architecture_style != 'auto' else (recs[0] if recs | length == 1 else ('modular' if recs | length == 0 else 'conflict')) }}
+
+docstring_resolved:
+  type: str
+  when: false
+  default: >-
+    {{ docstring_format if docstring_format != 'auto' else ('numpy' if profile_scientific else 'google') }}
+
+graph_mode:
+  type: str
+  when: false
+  default: >-
+    {{ 'contracts' if architecture_resolved in ['layered', 'hexagonal', 'custom'] or (architecture_resolved == 'modular' and profile_cli) else 'flat' }}
+
+package_path:
+  type: str
+  when: false
+  default: "{{ package | replace('.', '/') }}"
+
+greet_module:
+  type: str
+  when: false
+  default: >-
+    {{ package ~ '.core' if architecture_resolved in ['modular', 'custom'] else (package ~ '.application.service' if architecture_resolved == 'layered' else package ~ '.application.use_case') }}
+
+cli_greet_module:
+  type: str
+  when: false
+  default: >-
+    {{ package ~ '.core' if architecture_resolved in ['modular', 'custom'] else package ~ '.application.use_case' }}
+
+cli_module:
+  type: str
+  when: false
+  default: >-
+    {{ package ~ '.presentation.cli' if architecture_resolved == 'layered' else package ~ '.cli' }}

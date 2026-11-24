@@ -1,0 +1,13 @@
+{%- from "_docstrings.jinja" import make_presenter_doc with context -%}
+"""Composition root for {{ display_name }}."""
+
+from __future__ import annotations
+
+from {{ package }}.adapters.console import ConsolePresenter
+from {{ package }}.ports.greeting import Presenter
+
+
+def make_presenter() -> Presenter:
+    """{{ make_presenter_doc() | trim | indent(4) }}
+    """
+    return ConsolePresenter()

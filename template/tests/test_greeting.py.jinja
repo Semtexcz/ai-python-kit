@@ -1,0 +1,20 @@
+"""Behavior tests for the public greeting API."""
+
+from __future__ import annotations
+
+import pytest
+
+from {{ package }} import greet
+
+
+def test_greets_a_display_name() -> None:
+    assert greet("World") == "Hello, World!"
+
+
+def test_strips_surrounding_whitespace() -> None:
+    assert greet("  Ada  ") == "Hello, Ada!"
+
+
+def test_rejects_a_blank_name() -> None:
+    with pytest.raises(ValueError, match="name must not be blank"):
+        greet("   ")

@@ -1,0 +1,23 @@
+{%- from "_docstrings.jinja" import cli_main_doc with context -%}
+"""Command-line presentation for {{ display_name }}."""
+
+from __future__ import annotations
+
+import argparse
+from collections.abc import Sequence
+
+from {{ package }}.application.service import greet
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """{{ cli_main_doc() | trim | indent(4) }}
+    """
+    parser = argparse.ArgumentParser(prog="{{ distribution_name }}")
+    parser.add_argument("name", help="display name to greet")
+    args = parser.parse_args(argv)
+    try:
+        message = greet(args.name)
+    except ValueError as exc:
+        parser.error(str(exc))
+    print(message)
+    return 0

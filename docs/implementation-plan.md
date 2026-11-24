@@ -13,6 +13,7 @@ Each milestone has an observable outcome and exit evidence. The maintainer autho
 
 ## M1 — Core template, policy and deterministic tooling
 
+- **Progress (2026-11-24)** · Implemented in the repository: namespaced Copier overlay, profile composition, policy adapter, native configuration, unified recipe, lifecycle procedures, and deterministic tests. Local A01–A12 coverage is recorded in the [M1/M2 report](m1-m2-report.md). Independent M3 acceptance remains open; this is not a release.
 - **Outcome** · A pinned release candidate overlay can initialize, adopt and update one supported Python project and run repeatable gates.
 - **Dependencies** · M0 contracts and maintainer authorization. Pin and demonstrate tool compatibility before relying on a gate.
 - **Tasks**
@@ -26,6 +27,7 @@ Each milestone has an observable outcome and exit evidence. The maintainer autho
 
 ## M2 — Skills, guardrails and semantic workflows
 
+- **Progress (2026-11-24)** · Implemented: six workflow skills, shared references, root routing and guardrails, pinned upstream inventory, vendored Trail of Bits materials with notice, Nathan Gage references with the license fallback, and metadata/hash tests. Independent content and approval review remains with M3.
 - **Outcome** · Model-independent agent guidance routes real changes through adopted policy, verification and human acceptance.
 - **Dependencies** · M0 skill and review contracts. Write against the specified paths and interface alongside M1. Validate rendered routing and evidence after M1 stabilizes them. M1 and M2 can run as one authorized implementation pass.
 - **Tasks**
@@ -38,6 +40,7 @@ Each milestone has an observable outcome and exit evidence. The maintainer autho
 
 ## M3 — Independent acceptance and release preparation
 
+- **Status** · Not started. M1/M2 stop before independent review and release work.
 - **Outcome** · The maintainer has independent evidence to accept or remediate v0.1.0.
 - **Dependencies** · M1 and M2 exits, one representative pre-existing pilot project, and a reviewer independent of the implementation.
 - **Tasks**

@@ -1,0 +1,80 @@
+# Upstream skill provenance for the shipped AI Python Kit overlay.
+# Hashes cover included upstream files; NOTICE.md is kit-authored.
+schema = 1
+
+[[skills]]
+name = "modern-python"
+repository = "https://github.com/trailofbits/skills"
+path = "plugins/modern-python/skills/modern-python"
+commit = "149d7b21f4067765b82e67029730b42d228ef4b4"
+upstream_version = ""
+license = "CC-BY-SA-4.0"
+notice = "skills/modern-python/NOTICE.md"
+license_file = "skills/modern-python/LICENSE"
+distribution = "vendored"
+profiles = ["library", "cli", "scientific", "backend", "desktop", "automation", "data-processing"]
+purpose = "Setup, packaging, uv, and Ruff guidance with reviewed upstream references."
+incompatibilities = ["Generic ty and prek recommendations do not override the kit mypy and gate configuration.", "Dependency additions and migrations need project approval."]
+changes = "none"
+[skills.files]
+"LICENSE" = "7abe19ec9bb73b36141b999b861d24ad855e808bafe0f81e84cce28556f6c297"
+"SKILL.md" = "ef774b925eb1d1fc12e4f5ddc3f5ad925ecd795315827447228c70cc44c6170c"
+"references/dependabot.md" = "d3678e32472305c0ef136bca99b26c3f75554d63675930e396f26a91a97451ad"
+"references/migration-checklist.md" = "58c947e6200a91f350c9adc898af7fc6263fda41d36ae81ffd4dd923b3a1015e"
+"references/pep723-scripts.md" = "c348b136613a4fed8f623d6013c0c6413d2c24f2973b2e5f85b80ecc68646045"
+"references/prek.md" = "4be1c181c71aab64ba58573242a1c451d576a5c61ceeb400bb5827f4e1f9532a"
+"references/pyproject.md" = "aec906835ec687024700d31e5c146baaabc9524129384304857b3aa81809401b"
+"references/ruff-config.md" = "8d247862f1beaf76816ed6775f5a0c8dc96d74c7f2b71bbf1aaedc4937373b17"
+"references/security-setup.md" = "32d6754a87d5006f923706d10446cc617cb22d36cfc30b55d39bd7f4c61d864c"
+"references/testing.md" = "82e36068fbf28a9615d3c96e5d946e304ce8f89ae1ba7475d20934501d55b0d9"
+"references/uv-commands.md" = "348cd69e8c780a0c7d54a2fac3c2956c7efe5630229782753da1685416672cdc"
+"templates/dependabot.yml" = "a85ede8ff9cc3a2f63cb1fba24e65c36a5885ecc95722af15157dc5258f28a12"
+"templates/pre-commit-config.yaml" = "18efd067e75cba5fc71705c2f90c548a03c3cded4cd2a7f9b4a1d617e115db0d"
+
+[[skills]]
+name = "python-pytest"
+repository = "https://github.com/nathan-gage/python-skills"
+path = "skills/python-pytest"
+commit = "c5b961b32447e1be7dedea45ef166e74bb987f77"
+upstream_version = "v1.0.0"
+license = "MIT"
+notice = "https://github.com/nathan-gage/python-skills/blob/c5b961b32447e1be7dedea45ef166e74bb987f77/README.md#license"
+license_file = ""
+distribution = "reference"
+profiles = ["library", "cli", "scientific", "backend", "desktop", "automation", "data-processing"]
+purpose = "Testing discipline for committed tests, deterministic concurrency, fixtures, and mocking."
+incompatibilities = ["Kit markers, socket policy, and dependency approvals govern execution.", "Redistribution withheld pending a copyright and permission notice."]
+changes = "none"
+[skills.files]
+
+[[skills]]
+name = "python-best-practices"
+repository = "https://github.com/nathan-gage/python-skills"
+path = "skills/python-best-practices"
+commit = "c5b961b32447e1be7dedea45ef166e74bb987f77"
+upstream_version = "v1.5.0"
+license = "MIT"
+notice = "https://github.com/nathan-gage/python-skills/blob/c5b961b32447e1be7dedea45ef166e74bb987f77/README.md#license"
+license_file = ""
+distribution = "reference"
+profiles = ["library", "cli", "scientific", "backend", "desktop", "automation", "data-processing"]
+purpose = "Pinned design and review guidance for Python modules, APIs, data models, and errors."
+incompatibilities = ["Project baseline, conventions, and dependency controls take precedence."]
+changes = "none"
+[skills.files]
+
+[[skills]]
+name = "python-async-best-practices"
+repository = "https://github.com/nathan-gage/python-skills"
+path = "skills/python-async-best-practices"
+commit = "c5b961b32447e1be7dedea45ef166e74bb987f77"
+upstream_version = "v1.0.0"
+license = "MIT"
+notice = "https://github.com/nathan-gage/python-skills/blob/c5b961b32447e1be7dedea45ef166e74bb987f77/README.md#license"
+license_file = ""
+distribution = "reference"
+profiles = ["library", "cli", "scientific", "backend", "desktop", "automation", "data-processing"]
+purpose = "Pinned asynchronous and concurrency guidance for optional backend or desktop work."
+incompatibilities = ["Load only in context; project policy and runtime constraints take precedence."]
+changes = "none"
+[skills.files]

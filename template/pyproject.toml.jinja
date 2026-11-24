@@ -1,0 +1,42 @@
+[build-system]
+requires = ["uv_build==0.13.9"]
+build-backend = "uv_build"
+
+[project]
+name = "{{ distribution_name }}"
+version = "0.1.0"
+description = "{{ display_name }}"
+readme = "README.md"
+requires-python = ">={{ python_version }}"
+dependencies = []
+
+{% if profile_cli %}
+[project.scripts]
+"{{ distribution_name }}" = "{{ cli_module }}:main"
+{% endif %}
+
+[dependency-groups]
+# Reserved by the kit. It contains verification tooling only, never application
+# dependencies, and must not be included by project-owned groups.
+ai-python-kit = [
+    "coverage==7.17.5",
+    "deptry==0.25.1",
+    "flake8==7.5.0",
+    "import-linter==2.17",
+    "mypy==2.4.1",
+    "packaging==26.4",
+    "pip-audit==2.10.1",
+    "pydoclint==0.12.0",
+    "pytest==9.2.0",
+    "pytest-socket==0.8.1",
+    "ruff==0.17.6",
+]
+dev = []
+
+[tool.uv.build-backend]
+module-name = "{{ package }}"
+module-root = "{{ source_dir }}"
+
+[tool.deptry]
+known_first_party = ["{{ package.split('.')[0] }}"]
+extend_exclude = [".ai-python"]

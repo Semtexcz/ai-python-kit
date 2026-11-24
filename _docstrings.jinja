@@ -1,0 +1,133 @@
+{% macro greet_doc() -%}
+Return a greeting for a non-empty display name.
+{% if docstring_resolved == 'google' %}
+Args:
+    name: Display name to greet.
+
+Returns:
+    A greeting in the form ``Hello, <name>!``.
+
+Raises:
+    ValueError: If ``name`` is blank after surrounding whitespace is removed.
+{% elif docstring_resolved == 'numpy' %}
+Parameters
+----------
+name : str
+    Display name to greet.
+
+Returns
+-------
+str
+    A greeting in the form ``Hello, <name>!``.
+
+Raises
+------
+ValueError
+    If ``name`` is blank after surrounding whitespace is removed.
+{% elif docstring_resolved == 'sphinx' %}
+:param name: Display name to greet.
+:returns: A greeting in the form ``Hello, <name>!``.
+:raises ValueError: If ``name`` is blank after surrounding whitespace is removed.
+{% else %}
+The name is stripped of surrounding whitespace. A blank name is rejected with
+``ValueError``; otherwise the result has the form ``Hello, <name>!``.
+{% endif %}
+{%- endmacro %}
+
+{% macro service_greet_doc() -%}
+Return a greeting through the application layer.
+{% if docstring_resolved == 'google' %}
+Args:
+    name: Display name to greet.
+
+Returns:
+    A greeting in the form ``Hello, <name>!``.
+
+Raises:
+    ValueError: If ``name`` is blank after surrounding whitespace is removed.
+{% elif docstring_resolved == 'numpy' %}
+Parameters
+----------
+name : str
+    Display name to greet.
+
+Returns
+-------
+str
+    A greeting in the form ``Hello, <name>!``.
+
+Raises
+------
+ValueError
+    If ``name`` is blank after surrounding whitespace is removed.
+{% elif docstring_resolved == 'sphinx' %}
+:param name: Display name to greet.
+:returns: A greeting in the form ``Hello, <name>!``.
+:raises ValueError: If ``name`` is blank after surrounding whitespace is removed.
+{% else %}
+The application layer delegates validation and formatting to the domain layer.
+A blank name is rejected with ``ValueError``.
+{% endif %}
+{%- endmacro %}
+
+{% macro cli_main_doc() -%}
+Run the command-line interface.
+{% if docstring_resolved == 'google' %}
+Args:
+    argv: Optional argument list. Defaults to ``sys.argv[1:]`` when omitted.
+
+Returns:
+    Process exit code ``0`` after a successful greeting.
+{% elif docstring_resolved == 'numpy' %}
+Parameters
+----------
+argv : sequence of str, optional
+    Argument list. Defaults to ``sys.argv[1:]`` when omitted.
+
+Returns
+-------
+int
+    Process exit code ``0`` after a successful greeting.
+{% elif docstring_resolved == 'sphinx' %}
+:param argv: Optional argument list. Defaults to ``sys.argv[1:]`` when omitted.
+:returns: Process exit code ``0`` after a successful greeting.
+{% else %}
+Arguments default to ``sys.argv[1:]``. Invalid or blank input is reported through
+the argument parser and exits with status ``2``.
+{% endif %}
+{%- endmacro %}
+
+{% macro presenter_doc() -%}
+Receive a message for output by a presentation adapter.
+{% if docstring_resolved == 'google' %}
+Args:
+    message: Text to present.
+{% elif docstring_resolved == 'numpy' %}
+Parameters
+----------
+message : str
+    Text to present.
+{% elif docstring_resolved == 'sphinx' %}
+:param message: Text to present.
+{% else %}
+The adapter decides how the message is written; the port does not prescribe an
+output medium.
+{% endif %}
+{%- endmacro %}
+
+{% macro make_presenter_doc() -%}
+Build the presentation adapter used by the command-line entry point.
+{% if docstring_resolved == 'google' %}
+Returns:
+    A presenter that writes messages to standard output.
+{% elif docstring_resolved == 'numpy' %}
+Returns
+-------
+Presenter
+    A presenter that writes messages to standard output.
+{% elif docstring_resolved == 'sphinx' %}
+:returns: A presenter that writes messages to standard output.
+{% else %}
+The composition root is the only place that selects a concrete adapter.
+{% endif %}
+{%- endmacro %}

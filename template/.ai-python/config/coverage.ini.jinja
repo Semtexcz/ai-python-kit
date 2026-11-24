@@ -1,0 +1,17 @@
+# Project-owned coverage.py configuration selected explicitly by the kit recipe.
+[run]
+branch = {{ 'False' if quality == 'minimal' else 'True' }}
+source = {{ source_dir }}
+relative_files = True
+data_file = .ai-python/.coverage
+
+[report]
+fail_under = {{ '60' if quality == 'minimal' else ('90' if quality == 'strict' else '80') }}
+precision = 2
+show_missing = True
+skip_covered = False
+exclude_also =
+    if TYPE_CHECKING:
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    \.\.\.

@@ -1,0 +1,6 @@
+# Optional project-owned alias for the AI Python Kit check.
+default:
+    @just --list
+
+check *args:
+    just --justfile .ai-python/kit/justfile --working-directory . check {{ args }}

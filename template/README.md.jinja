@@ -1,0 +1,42 @@
+# {{ display_name }}
+
+{{ display_name }} is a Python project with an explicit engineering policy and one verification workflow.
+
+## Quickstart
+
+```sh
+uv sync --group ai-python-kit
+just check
+```
+
+`just check` delegates to the kit recipe:
+
+```sh
+just --justfile .ai-python/kit/justfile --working-directory . check
+```
+
+The default run is offline and deterministic. Use `check online` to add live dependency vulnerability data.
+
+{% if profile_cli %}
+Run the command:
+
+```sh
+uv run {{ distribution_name }} World
+```
+{% endif %}
+
+## Policy and ownership
+
+- `.ai-python/policy.toml` is project-owned engineering policy.
+- `.ai-python/config/` is project-owned native tool configuration.
+- `.ai-python/kit/` is kit-managed and changes through reviewed Copier updates.
+- `pyproject.toml`, `uv.lock`, `.python-version`, source, tests, root instructions, and CI are project-owned.
+- `.copier-answers.ai-python-kit.yml` records template lineage and original scaffold answers.
+
+Read `.ai-python/kit/references/engineering-policy.md` for the policy map and `.ai-python/kit/references/evidence.md` for verification evidence.
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Engineering guidance](docs/engineering-guidance.md)
+- [Agent instructions](AGENTS.md)

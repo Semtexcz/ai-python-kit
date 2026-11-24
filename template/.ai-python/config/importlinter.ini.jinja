@@ -1,0 +1,48 @@
+# Project-owned Import Linter contracts selected explicitly by the kit recipe.
+[importlinter]
+root_package = {{ package }}
+include_external_packages = False
+
+{% if architecture_resolved == 'layered' %}
+[importlinter:contract:layers]
+name = Presentation depends on application, application depends on domain
+type = layers
+layers =
+    {% if profile_cli %}{{ package }}.presentation{% endif %}
+    {{ package }}.application
+    {{ package }}.domain
+{% elif architecture_resolved == 'hexagonal' %}
+[importlinter:contract:domain-independence]
+name = Domain does not depend on application, ports, adapters, or composition
+type = forbidden
+source_modules =
+    {{ package }}.domain
+forbidden_modules =
+    {{ package }}.application
+    {{ package }}.ports
+    {{ package }}.adapters
+    {{ package }}.composition
+
+[importlinter:contract:ports-independence]
+name = Ports do not depend on adapters or composition
+type = forbidden
+source_modules =
+    {{ package }}.ports
+forbidden_modules =
+    {{ package }}.adapters
+    {{ package }}.composition
+{% elif profile_cli %}
+[importlinter:contract:core-direction]
+name = Core does not depend on the command-line layer
+type = forbidden
+source_modules =
+    {{ package }}.core
+forbidden_modules =
+    {{ package }}.cli
+{% endif %}
+
+[importlinter:contract:acyclic-siblings]
+name = Immediate package children are acyclic
+type = acyclic_siblings
+ancestors =
+    {{ package }}

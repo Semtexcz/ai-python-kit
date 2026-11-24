@@ -1,0 +1,18 @@
+# Project-owned Gitleaks configuration selected explicitly by the kit recipe.
+# Upstream default rules remain enabled; only non-product paths are excluded.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Verification environments, caches, and generated evidence"
+condition = "OR"
+paths = [
+    '''(^|/)\.git/''',
+    '''(^|/)\.venv/''',
+    '''(^|/)\.ai-python/\.venv/''',
+    '''(^|/)\.ai-python/cache/''',
+    '''(^|/)\.ai-python/evidence/''',
+    '''(^|/)\.pytest_cache/''',
+    '''(^|/)\.mypy_cache/''',
+    '''(^|/)\.ruff_cache/''',
+]

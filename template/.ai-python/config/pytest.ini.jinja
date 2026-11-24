@@ -1,0 +1,18 @@
+# Project-owned pytest configuration selected explicitly by the kit recipe.
+[pytest]
+minversion = 9.0
+testpaths = {{ tests_dir }}
+cache_dir = .ai-python/cache/pytest
+addopts = -ra --strict-markers --strict-config --import-mode=importlib
+xfail_strict = true
+filterwarnings =
+    error
+markers =
+    unit: fast deterministic unit behavior
+    integration: component interaction within the project
+    regression: defect or contract regression coverage
+    property: property-based or generated-input coverage
+    end_to_end: full workflow through public entry points
+    external: requires live infrastructure; excluded from default runs
+    stochastic: uses sampled or scheduling-dependent inputs; excluded from default runs
+    performance: measures timing or resource behavior; excluded from default runs

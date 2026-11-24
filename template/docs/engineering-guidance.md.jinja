@@ -1,0 +1,43 @@
+# Engineering guidance
+
+Project policy lives in `.ai-python/policy.toml`. This document records review guidance contributed by the selected profiles; it adds no automatic dependency or framework selection.
+
+## Base
+
+Keep components cohesive and interfaces narrow. Validate untrusted and boundary inputs with explicit errors. Keep computations separate from I/O where practical. Document observable behavior, units, assumptions, and side effects. Test behavior with independent expected results and add a regression case with every defect correction.
+
+{% if 'library' in profiles %}
+## Library
+
+Treat exported names in `{{ package }}` and literal `__all__` entries as the public API. Additive changes need behavior tests; incompatible changes need an explicit review decision and migration note.
+{% endif %}
+{% if 'cli' in profiles %}
+## Command line
+
+Keep argument parsing at the boundary and return meaningful exit codes. `0` means success, `2` is the parser's usage error, and unexpected failures should not be converted into success. Test valid input, invalid input, and the installed console entry.
+{% endif %}
+{% if 'scientific' in profiles %}
+## Scientific computing
+
+State units and assumptions at interfaces, in fixtures, and in docstrings. Use justified absolute and relative tolerances derived from scale and conditioning. Prefer analytic solutions or independent reference data. Check conservation and invariants where they apply. Record seeds, toolchain, and algorithm settings when results depend on them. NumPy-style docstrings are the profile recommendation; `[docstrings].format` is authoritative.
+{% endif %}
+{% if 'backend' in profiles %}
+## Backend and API
+
+Keep process, database, and network boundaries explicit. Validate request data before use, keep transactions scoped, and make failure behavior visible. Framework selection stays with the project; no runtime dependency is added by this profile.
+{% endif %}
+{% if 'desktop' in profiles %}
+## Desktop application
+
+Keep presentation and event-loop code at the boundary. Do not block the event loop with unbounded work. Inject clocks, file-system access, and external services where they affect behavior. Toolkit selection stays with the project.
+{% endif %}
+{% if 'automation' in profiles %}
+## Automation
+
+Make inputs, outputs, configuration sources, and failure modes explicit. Prefer idempotent operations with narrow side effects. Test repeated execution and partial-failure behavior where relevant.
+{% endif %}
+{% if 'data-processing' in profiles %}
+## Data processing
+
+Define the input schema and validation rules before transformation. Keep transformations deterministic and test representative, boundary, and invalid records. Record ordering and type assumptions that affect results.
+{% endif %}

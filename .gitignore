@@ -1,0 +1,13 @@
+.venv/
+.ai-python/.venv/
+.ai-python/.coverage
+.ai-python/evidence/
+.ai-python/cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/

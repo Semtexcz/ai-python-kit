@@ -1,6 +1,6 @@
 # Agent instructions
 
-- Read [PROJECT_INTENT.md](PROJECT_INTENT.md), then the active milestone in the [implementation plan](docs/implementation-plan.md) and its linked requirements. M0 authorizes specification only. Begin implementation or release work only when the maintainer authorizes the relevant milestone.
+- Read [PROJECT_INTENT.md](PROJECT_INTENT.md), then the active milestone in the [implementation plan](docs/implementation-plan.md) and its linked requirements. M0 authorized specification; the maintainer authorized the combined M1/M2 implementation recorded in the [M1/M2 report](docs/m1-m2-report.md). M3 independent acceptance and any release action still require explicit maintainer authorization.
 - Reuse maintained tools and their native configuration first. Keep changes scoped and keep each policy in its designated source. Read existing functionality before adding a parallel implementation.
 - Respect consumer file ownership. Use [MVP architecture and lifecycle](docs/mvp.md) for template behavior and [engineering policies](docs/policies.md) for rules.
 - Write focused English documentation with relative links and specific sources. Use Diátaxis according to reader need. Keep examples aligned with verified behavior and label plans explicitly.

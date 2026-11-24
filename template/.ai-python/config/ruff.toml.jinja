@@ -1,0 +1,52 @@
+# Project-owned Ruff configuration selected explicitly by the kit recipe.
+target-version = "py{{ python_version | replace('.', '') }}"
+line-length = 100
+src = ["{{ source_dir }}", "{{ tests_dir }}"]
+
+[lint]
+select = [
+    "B",
+    "C4",
+    "C901",
+    "D",
+    "E",
+    "F",
+    "I",
+    "PGH003",
+    {% if quality != 'minimal' %}"PLR0913",{% endif %}
+    "S102",
+    "S105",
+    "S106",
+    "S107",
+    "S307",
+    "SIM",
+    "UP",
+    "W",
+]
+ignore = [
+    "D203",
+    "D213",
+    {% if quality == 'minimal' %}"D417",{% endif %}
+]
+
+[lint.mccabe]
+max-complexity = {{ '15' if quality == 'minimal' else ('10' if quality == 'strict' else '12') }}
+
+[lint.pydocstyle]
+convention = "{{ 'numpy' if docstring_resolved == 'numpy' else ('google' if docstring_resolved == 'google' else 'pep257') }}"
+
+[lint.pylint]
+max-args = {{ '5' if quality == 'strict' else '7' }}
+
+[lint.isort]
+known-first-party = ["{{ package.split('.')[0] }}"]
+
+[lint.per-file-ignores]
+# Docstring scope for tests is opt-in through policy; the presence adapter and
+# pydoclint cover selected test categories.
+"{{ tests_dir }}/**/*.py" = ["D"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

@@ -1,0 +1,13 @@
+# Project-owned Flake8 host configuration for the pydoclint plugin.
+[flake8]
+select = DOC001,DOC002,DOC101,DOC102,DOC103,DOC104,DOC201,DOC202,DOC402
+style = {{ 'google' if docstring_resolved == 'pep257' else docstring_resolved }}
+arg-type-hints-in-signature = False
+arg-type-hints-in-docstring = False
+check-return-types = False
+check-yield-types = False
+check-arg-order = True
+allow-init-docstring = True
+skip-checking-short-docstrings = True
+skip-checking-private-functions = {{ 'False' if quality == 'strict' else 'True' }}
+max-line-length = 100

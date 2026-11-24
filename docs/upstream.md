@@ -72,6 +72,8 @@ The three sibling projects were inspected from accessible local files and their 
 
 The reference projects inform design. This milestone copies no source or template from them. Check file-level licenses before any literal reuse.
 
-## Remaining validation
+## M1/M2 validation
 
-M1 verifies Copier's seed/update behavior, pytest plugin isolation and marker commands, contract matching, pydoclint modes, deptry group behavior, tool and interpreter pins, and audit export/exclusion handling. M2 verifies full vendored scope and notices. M3 tests positive/negative cases, provider smoke and independent pilot adoption. See the [implementation plan](implementation-plan.md) for the disposition of any failed native claim.
+M1/M2 implemented the selected workflow and ran the documented probes: Copier seed/update/conflict behavior, uv locked offline sync and graph export, pytest plugin isolation and marker selection, Import Linter contract behavior, pydoclint styles, deptry diagnostics, Gitleaks worktree handling, coverage thresholds, and advisory report interpretation. Exact pins, commands, licenses, observed behavior, and limitations are in [toolchain evidence](toolchain.md). Vendored file hashes and notices are in `.ai-python/kit/upstream-skills.toml` and the [skills record](skills.md#upstream-skill-provenance).
+
+M3 still owns the full independent positive/negative acceptance pass, live provider smoke evidence, compatibility matrix confirmation, and pilot adoption. A release record must recheck the provider and platform claims; M1/M2 results are scoped to the recorded revision and local Linux/Python 3.12 environment.

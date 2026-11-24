@@ -1,0 +1,12 @@
+{%- from "_docstrings.jinja" import service_greet_doc with context -%}
+"""Application use case for {{ display_name }}."""
+
+from __future__ import annotations
+
+from {{ package }}.domain.greeting import greet as domain_greet
+
+
+def greet(name: str) -> str:
+    """{{ service_greet_doc() | trim | indent(4) }}
+    """
+    return domain_greet(name)

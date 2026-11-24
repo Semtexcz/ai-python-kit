@@ -1,0 +1,78 @@
+[project]
+name = "ai-python-kit"
+version = "0.1.0"
+description = "Project-owned Python engineering policy, Copier overlay, and verification workflow."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "copier==9.19.1",
+    "coverage==7.17.5",
+    "mypy==2.4.1",
+    "packaging==26.4",
+    "pytest==9.2.0",
+    "ruff==0.17.6",
+    "rust-just==1.59.0",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["tests", "template/.ai-python/kit/adapter"]
+
+[tool.ruff.lint]
+select = [
+    "B",
+    "C4",
+    "C901",
+    "D",
+    "E",
+    "F",
+    "I",
+    "PGH003",
+    "PLR0913",
+    "S102",
+    "S105",
+    "S106",
+    "S107",
+    "S307",
+    "SIM",
+    "UP",
+    "W",
+]
+ignore = ["D203", "D213"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 12
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["D", "S105"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pylint]
+max-args = 7
+
+[tool.mypy]
+python_version = "3.12"
+check_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers --strict-config --import-mode=importlib"
+tmp_path_retention_policy = "failed"
+tmp_path_retention_count = 1
+markers = [
+    "e2e: renders a project and runs the real verification workflow",
+    "network: requires package-index or advisory-service access",
+]

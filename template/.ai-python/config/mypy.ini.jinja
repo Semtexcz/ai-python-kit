@@ -1,0 +1,19 @@
+# Project-owned mypy configuration selected explicitly by the kit recipe.
+[mypy]
+python_version = {{ python_version }}
+check_untyped_defs = True
+no_implicit_optional = True
+warn_unused_ignores = True
+warn_redundant_casts = True
+warn_unused_configs = True
+show_error_codes = True
+pretty = True
+mypy_path = {{ source_dir }}
+explicit_package_bases = True
+{% if quality == 'standard' %}
+disallow_untyped_defs = True
+disallow_incomplete_defs = True
+{% elif quality == 'strict' %}
+strict = True
+disallow_any_explicit = True
+{% endif %}

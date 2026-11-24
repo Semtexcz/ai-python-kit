@@ -1,0 +1,13 @@
+{%- from "_docstrings.jinja" import greet_doc with context -%}
+"""Domain behavior for {{ display_name }}."""
+
+from __future__ import annotations
+
+
+def greet(name: str) -> str:
+    """{{ greet_doc() | trim | indent(4) }}
+    """
+    normalized = name.strip()
+    if not normalized:
+        raise ValueError("name must not be blank")
+    return f"Hello, {normalized}!"

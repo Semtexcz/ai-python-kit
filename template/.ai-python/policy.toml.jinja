@@ -1,0 +1,45 @@
+# Project-owned engineering policy for {{ display_name }}.
+# The kit reads this file; change it deliberately and record policy exceptions
+# with human approval. See .ai-python/kit/references/engineering-policy.md.
+
+schema = 1
+profiles = [{{ profiles | map('tojson') | join(', ') }}]
+quality = "{{ quality }}"
+
+[project]
+package = "{{ package }}"
+source = ["{{ source_dir }}"]
+tests = ["{{ tests_dir }}"]
+verify_groups = []
+verify_extras = []
+
+[architecture]
+style = "{{ architecture_resolved }}"
+reference = "docs/architecture.md"
+graph = "{{ graph_mode }}"
+
+[dependencies]
+runtime = "balanced"
+development = "reuse-first"
+approve_runtime_additions = true
+approve_development_additions = false
+
+[typing]
+annotation_scope = "{{ 'public' if quality == 'minimal' else 'production' }}"
+scope_reference = ""
+
+[docstrings]
+format = "{{ docstring_resolved }}"
+scope = "{{ 'all' if quality == 'strict' else 'public' }}"
+public_detail = "{{ 'summary' if quality == 'minimal' else ('detailed' if quality == 'strict' else 'standard') }}"
+private_detail = "{{ 'standard' if quality == 'strict' else 'summary' }}"
+language = "en"
+categories = []
+
+[testing]
+categories = ["unit", "regression"]
+plugins = []
+
+[review]
+function_lines = 60
+module_lines = 400

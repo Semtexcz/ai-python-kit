@@ -1,0 +1,15 @@
+{%- from "_docstrings.jinja" import presenter_doc with context -%}
+"""Output ports for {{ display_name }}."""
+
+from __future__ import annotations
+
+from typing import Protocol
+
+
+class Presenter(Protocol):
+    """Port for presenting a completed message to the outside world."""
+
+    def present(self, message: str) -> None:
+        """{{ presenter_doc() | trim | indent(8) }}
+        """
+        ...

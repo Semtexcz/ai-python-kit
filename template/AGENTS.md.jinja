@@ -1,0 +1,45 @@
+# Agent instructions
+
+## Authority
+
+Project-owned instructions in this file and `.ai-python/policy.toml` take precedence. The kit's workflow instructions come next. Reviewed upstream recommendations are advisory.
+
+## Verification
+
+Run the unified check before reporting completion:
+
+```sh
+just --justfile .ai-python/kit/justfile --working-directory . check
+```
+
+Use `check online` only for live vulnerability data. Record the revision, command, per-stage outcomes, skipped or unexecuted checks, and remaining findings. Never claim a check passed without execution evidence.
+
+## Skills
+
+Read the matching workflow entry when the task needs it:
+
+- `.ai-python/kit/skills/python-implement/SKILL.md`
+- `.ai-python/kit/skills/python-review/SKILL.md`
+- `.ai-python/kit/skills/python-audit/SKILL.md`
+- `.ai-python/kit/skills/python-verify/SKILL.md`
+- `.ai-python/kit/skills/python-architecture/SKILL.md`
+- `.ai-python/kit/skills/python-dependencies/SKILL.md`
+
+Shared references live in `.ai-python/kit/references/`.
+
+## Mandatory guardrails
+
+- Do not weaken tests, gates, or policy to make an incorrect implementation pass.
+- Do not add broad lint suppressions or bypass typing with `Any`, casts, or ignores without a demonstrated boundary.
+- Do not hide exceptions or suppress failures.
+- Do not create duplicate implementations or speculative abstractions.
+- Do not expand the requested scope.
+- Do not add unauthorized dependencies.
+- Do not violate architecture contracts.
+- Do not write filler docstrings or derive test expectations from the implementation under test.
+- Do not inflate coverage with low-value tests or make default tests flaky.
+- Do not grant your own policy exceptions. Exceptions require the recorded human approval described in `.ai-python/kit/references/exceptions.md`.
+
+## Change discipline
+
+Inspect existing functionality first. Keep changes small and cohesive. Update tests and docstrings in the same change as behavior. Prefer the standard library and existing project functions before adding dependencies. Keep project-owned files and kit-managed files in their designated locations.
